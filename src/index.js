@@ -3,9 +3,10 @@ import { dbConnect } from './utils/db.js';
 
 const PORT = process.env.PORT || 5000;
 
+app.u
 dbConnect().then(()=>{
     app.listen(PORT,()=>{
-        console.log('Server has started listening to ',PORT)
+        console.log('Server has started listening to',PORT)
     })
 })
 .catch((error)=>{
