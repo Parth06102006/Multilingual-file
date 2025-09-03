@@ -10,6 +10,9 @@ const questionSchema = new mongoose.Schema({
     },
     questionText:{
         type:String
+    },
+    title:{
+        type:String
     }
 },{
     timestamps:true

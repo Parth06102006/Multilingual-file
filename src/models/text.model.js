@@ -10,11 +10,11 @@ const textSchema = new mongoose.Schema({
         ref:'Question'
     },
     sources:[{
-        pdfId:[{
+        pdfId:{
             type:mongoose.Schema.Types.ObjectId,
             ref:'PDF',
             required:true
-        }],
+        },
         pageNumber:{
             type:Number,
             required:true
@@ -24,6 +24,12 @@ const textSchema = new mongoose.Schema({
         type:String
     },
     answerText:{
+        type:String
+    },
+    sessionId:{
+        type:String
+    },
+    title:{
         type:String
     }
 },{

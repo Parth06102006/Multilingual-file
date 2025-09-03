@@ -12,6 +12,10 @@
     "dev": "nodemon run src/index.js"
   },
   "dependencies": {
+    "@google/genai": "^1.16.0",
+    "@qdrant/js-client-rest": "^1.15.1",
+    "@supabase/supabase-js": "^2.57.0",
+    "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -27,7 +31,8 @@
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.6",
-    "pdf-parser": "^1.0.5"
+    "pdf-parser": "^1.0.5",
+    "pdfjs-dist": "^5.4.149"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
