@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
     timestamps:true
 })
 
-userSchema.methods.hashPassword = async function(password){
+userSchema.methods.isPasswordCorrect = async function(password){
     return bcrypt.compareSync(password,this.password);
 }
 
@@ -36,7 +36,7 @@ userSchema.methods.generateToken = function()
         username:this.username,
         email:this.email,
     }
-    jwt.sign(payload,process.env.JWT_SECRET_KEY,{
+    return jwt.sign(payload,process.env.JWT_SECRET_KEY,{
         expiresIn:process.env.JWT_TOKEN_EXPIRY
     })
 }

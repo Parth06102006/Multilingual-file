@@ -4,7 +4,6 @@ import cors from 'cors'
 import { errorHandler } from './middlewares/error.middleware.js'
 import helmet from 'helmet'
 import hpp from 'hpp'
-import mongoSanitize from 'express-mongo-sanitize'
 import {xss} from 'express-xss-sanitizer'
 import morgan from 'morgan'
 import cookieParser from 'cookie-parser'
@@ -25,7 +24,6 @@ app.use(cors({
 
 //Security middleware
 app.use(helmet());
-app.use(mongoSanitize())
 app.use(hpp())
 app.use(xss());
 

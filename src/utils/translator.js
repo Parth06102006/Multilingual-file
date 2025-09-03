@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { ApiError } from "./ApiError";
+import { ApiError } from "./ApiError.js";
 
 export const translateLanguage = async (text, pageNumber) => {
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_2 });

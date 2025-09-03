@@ -42,6 +42,7 @@ const signup = asyncHandler(async(req,res)=>{
                 throw new ApiError(500,'Internal Server Error');
             }
     } catch (error) {
+        console.error(error.message)
         throw new ApiError(500,'Internal Server Error');
     }
 
@@ -60,22 +61,22 @@ const login = asyncHandler(async(req,res)=>{
         const existingUser = await User.findOne({email});
         if(!existingUser)
         {
-            throw new ApiError('User does not exsist');
+            throw new ApiError(401,'User does not exsist');
         }
 
         //Compare and check that is password correct or not
-        const isValidPassword = await existingUser.isPasswordCorrect();
+        const isValidPassword = await existingUser.isPasswordCorrect(password);
         if(!isValidPassword)
         {
             throw new ApiError(401,'Password is Incorrect');
         }
 
-        const generatedToken = newUser.generatedToken();
+        const generatedToken = existingUser.generateToken();
 
         const options = {
             httpOnly:true,
-            secure:(NODE_ENV === 'production') ? true : false,
-            sameSite:(NODE_ENV === 'production') ? 'none' : 'lax',
+            secure:(process.env.NODE_ENV === 'production') ? true : false,
+            sameSite:(process.env.NODE_ENV === 'production') ? 'none' : 'lax',
             expires:new Date(Date.now()+2*24*60*60*100)
         }
 

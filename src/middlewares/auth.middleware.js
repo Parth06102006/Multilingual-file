@@ -4,8 +4,8 @@ import jwt from 'jsonwebtoken'
 import { User } from "../models/user.model.js";
 
 export const authHandler = asyncHandler(async(req,res,next)=>{
-    try {
-        const token = req.body.token || req.cookies.token || req.headers.authorization.replace('Bearer ','');
+        const token = req.cookies?.token ||
+        (req.headers.authorization?.startsWith("Bearer ") ? req.headers.authorization.split(" ")[1]: null) || req.body?.token;
         if(!token)
         {
             throw new ApiError(400,'No Token Found')
@@ -16,9 +16,6 @@ export const authHandler = asyncHandler(async(req,res,next)=>{
         {
             throw new ApiError(401,'User not found');
         }
-        req.user = userId;
-        next()
-    } catch (error) {
-        throw new ApiError(400,'User is not authenticated')
-    };
+        req.user = existingUser._id;
+        next();
 })

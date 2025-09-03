@@ -1,17 +1,26 @@
 import { ApiError } from "../utils/ApiError.js";
 import mongoose from "mongoose";
 
-const errorHandler = (err,req,res,next)=>{
-    let error;
-    if(!(err instanceof ApiError))
-    {
+const errorHandler = (err, req, res, next) => {
+    // always start with the original error
+    let error = err;
+
+    // if it's not already an ApiError, wrap it
+    if (!(err instanceof ApiError)) {
         const statusCode = err.statusCode || (err instanceof mongoose.Error ? 400 : 500);
-        const message = "Something Went Wrong" || err.message
-        error = new ApiError(statusCode,message,err?.errors || [],err.stack)
+        const message = err.message || "Something Went Wrong";
+        error = new ApiError(statusCode, message, err?.errors || [], err.stack);
     }
 
-    const response = {...error};
-    return res.status(err.statusCode).json(response)
-}
+    // build safe response
+    const response = {
+        statusCode: error.statusCode || 500,
+        message: error.message,
+        errors: error.errors || [],
+        stack: process.env.NODE_ENV === "development" ? error.stack : undefined
+    };
 
-export {errorHandler}
+    return res.status(response.statusCode).json(response);
+};
+
+export { errorHandler };
