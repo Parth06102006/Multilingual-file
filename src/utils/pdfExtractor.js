@@ -1,4 +1,4 @@
-import pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs'
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs'
 
 async function extractPageWiseText(pdfBuffer)
 {

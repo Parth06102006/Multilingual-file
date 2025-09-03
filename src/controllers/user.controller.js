@@ -1,6 +1,6 @@
 import {asyncHandler} from '../utils/asyncHandler.js'
-import { ApiError } from '../utils/ApiError'
-import { ApiResponse } from '../utils/ApiResponse'
+import { ApiError } from '../utils/ApiError.js'
+import { ApiResponse } from '../utils/ApiResponse.js'
 import {User} from '../models/user.model.js'
 import bcrypt from 'bcryptjs'
 
@@ -88,7 +88,7 @@ const login = asyncHandler(async(req,res)=>{
 })
 
 
-const logOut = asyncHandler(async(req,res)=>{
+const logout = asyncHandler(async(req,res)=>{
     try {
         const userId = req.user;
         const existingUser = await User.findById(userId);
@@ -101,8 +101,9 @@ const logOut = asyncHandler(async(req,res)=>{
         }
         return res.status(200).clearCookie('token',options).json(new ApiResponse(200,'User LoggedOut Successfully'));
     } catch (error) {
-        
+        console.error(error.message)
+        throw new ApiError(500,'Error in Logging Out')
     }
 })
 
-export {signup,login,logOut};
+export {signup,login,logout};

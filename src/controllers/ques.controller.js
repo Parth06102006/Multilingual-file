@@ -5,6 +5,7 @@ import { User } from "../models/user.model.js";
 import { PDF } from "../models/pdf.model.js";
 import { Question } from "../models/question.model.js";
 import {ai,client} from '../utils/geminiQdrant.js'
+import { translateLanguage } from "../utils/translator.js";
 
 const question = asyncHandler(async(req,res)=>{
     const {question,sessionId,title} = req.body;
@@ -66,13 +67,17 @@ const answer = asyncHandler(async (req,res)=> {
     }))
 
     const texts = [];
+    const translatedText = [];
     for(const mp of matchedPages)
     {
         const pdf = await PDF.findById(mp.pdfId);
         if(pdf)
         {
             const page = pdf.text.find(p=>p.pageNumber === mp.pageNumber)
-            if(page) texts.push(page.content);
+            if(page) {
+                texts.push(page.content)
+                translateLanguage(page.content,p.pageNumber)
+            };
         }
     }
 
@@ -89,13 +94,15 @@ const answer = asyncHandler(async (req,res)=> {
         throw new ApiError(500,'Error Getting Response');
     }
 
+
+
     const answerText = answerResponse.choices[0].message.content;
 
     const answer = await Text.create({
         userId:req.user,
         questionId:questionId,
         sources:matchedPages,
-        translatedText: '',//to add a translator 
+        translatedText: translatedText,//to add a translator 
         answerText,
         sessionId,
         title:title

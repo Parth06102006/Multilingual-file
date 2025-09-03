@@ -1,11 +1,11 @@
-import { asyncHandler } from "../utils/asyncHandler";
-import { ApiError } from "../utils/ApiError";
-import { ApiResponse } from "../utils/ApiResponse";
-import { User } from "../models/user.model";
-import { PDF } from "../models/pdf.model";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { PDF } from "../models/pdf.model.js";
 import supabase from '@supabase/supabase-js'
-import { extractPageWiseText } from "../utils/pdfExtractor";
+import { extractPageWiseText } from "../utils/pdfExtractor.js";
 import {client,ai} from '../utils/geminiQdrant.js'
+import { detectLanguage } from "../utils/languageDetection.js";
 
 async function generateAndStorePageEmbeddings(pdfId,pages,userId)
 {
@@ -36,7 +36,7 @@ async function generateAndStorePageEmbeddings(pdfId,pages,userId)
     }
 }
 
-const pdfUpload = asyncHandler(async(req,res)=>{
+export const pdfUpload = asyncHandler(async(req,res)=>{
     const pdfFile = req?.files?.['pdfFile']
 
     if(!pdfFile)
@@ -71,13 +71,14 @@ const pdfUpload = asyncHandler(async(req,res)=>{
     const file_upload_path = `https://${process.env.SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/${process.env.SUPABASE_PROJECT_BUCKET}/${data.path}`
 
     //to add langauage detection function otherwise done
+    const languageDetected = detectLanguage(pdfData.text)//to look at the language string after parsing through the object
 
     try {
             const newPdf = await PDF.create({
                 userId:req.user,
                 fileName,
                 filePath:file_upload_path,
-                language:'',//to add text langauge in it
+                language:languageDetected,//to add text langauge in it
                 text:pdfData.pagesText,
                 totalPages
             })

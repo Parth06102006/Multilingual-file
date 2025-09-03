@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 const questionSchema = new mongoose.Schema({
     userId:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:['User']
+        ref:'User'
     },
     sessionId:{
         type:String

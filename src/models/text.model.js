@@ -1,5 +1,16 @@
 import mongoose from 'mongoose'
 
+const translatedSchema = new mongoose.Schema({
+    pageNumber:{
+        type:Number,
+        required:true
+    },
+    content:{
+        type:String,
+        required:true
+    }
+})
+
 const textSchema = new mongoose.Schema({
     userId:{
         type:mongoose.Schema.Types.ObjectId,
@@ -21,7 +32,8 @@ const textSchema = new mongoose.Schema({
         }
     }],
     translatedText:{
-        type:String
+        type:[translatedSchema],
+        default:[]
     },
     answerText:{
         type:String
