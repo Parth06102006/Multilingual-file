@@ -4,11 +4,18 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { PDF } from "../models/pdf.model.js";
 import {createClient} from '@supabase/supabase-js'
 import { extractPageWiseText } from "../utils/pdfExtractor.js";
-import {client,ai} from '../utils/geminiQdrant.js'
+import { GoogleGenAI } from "@google/genai";
 import { detectLanguage } from "../utils/languageDetection.js";
+import {QdrantClient} from '@qdrant/js-client-rest';
+import {v4 as uuidv4} from 'uuid'
 
 async function generateAndStorePageEmbeddings(pdfId,pages,userId)
 {
+    const ai = new GoogleGenAI({apiKey:process.env.GEMINI_API_KEY_3})
+    const client = new QdrantClient({
+        url:process.env.QDRANT_URL,
+        apiKey:process.env.QDRANT_API_KEY
+    })
     try {
         const pageTexts = pages.map(p=>p.content);
         console.log(pageTexts)
@@ -17,9 +24,9 @@ async function generateAndStorePageEmbeddings(pdfId,pages,userId)
             // model:"gemini-2.5-pro",
             contents:pageTexts
         })
-        console.log('THIS IS THE RESPONSE',response)
+
         const points = response.embeddings.map((embedding,idx)=>({
-            id:`${pdfId}_${pages[idx].pageNumber}`,
+            id:uuidv4(),
             vector:embedding.values,
             payload:{
                 pdfId,
@@ -27,11 +34,26 @@ async function generateAndStorePageEmbeddings(pdfId,pages,userId)
                 userId
             }
         }))
-
-        await client.points.upsert({
-            collection_name:"pdf_pages",
-            points
-        })
+        console.log('HEy')
+        //////
+        try {
+            console.log('About to upsert points:', points.length);
+            
+            const result = await client.upsert("pdf_pages",
+            {
+                wait:true,
+                points: points
+            });
+            
+            console.log("Upsert result ******\n", result);
+        } catch (error) {
+            console.error("Upsert error:", error);
+            console.error("Error details:", error.message);
+            if (error.response) {
+                console.error("Response data:", error.response.data);
+            }
+        }
+        //////
     } catch (error) {
         console.error(error.message)
         throw new ApiError(500,'Error Uploading the PDF to vector database')
