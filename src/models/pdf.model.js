@@ -1,43 +1,54 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 
 const pageSchema = new mongoose.Schema({
-    pageNumber:{
-        type:Number,
-        required:true
+    pageNumber: {
+        type: Number,
+        required: true
     },
-    content:{
-        type:String,
-        required:true
+    content: {
+        type: String,
+        required: true
     }
-})
+});
 
 const pdfSchema = new mongoose.Schema({
-    userId:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User'
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     },
-    fileName:{
-        type:String,
-        trim:true,
-        unique:true,
-        required:true
+    sessionId: {
+        type: String,
+        default: '', // Make optional - empty string for general library PDFs
+        index: true
     },
-    filePath:{
-        type:String,
-        required:true
+    fileName: {
+        type: String,
+        trim: true,
+        required: true
     },
-    language:{
-        type:String
+    filePath: {
+        type: String,
+        required: true
     },
-    text:{
-        type:[pageSchema],
-        default:[]
+    language: {
+        type: String,
+        default: 'en'
     },
-    totalPages:{
-        type:Number
+    text: {
+        type: [pageSchema],
+        default: []
+    },
+    totalPages: {
+        type: Number,
+        default: 0
     }
-},{
-    timestamps:true
-})
+}, {
+    timestamps: true
+});
 
-export const PDF = mongoose.model('PDF',pdfSchema)
+// Add compound index for efficient querying
+pdfSchema.index({ userId: 1, sessionId: 1 });
+pdfSchema.index({ userId: 1, createdAt: -1 });
+
+export const PDF = mongoose.model('PDF', pdfSchema);

@@ -17,9 +17,12 @@ dotenv.config({
 })
 
 const app = express();
-
+console.log(process.env.FRONTEND_URL)
 app.use(cors({
-    origin:'*'
+    origin:process.env.FRONTEND_URL,
+    credentials:true,
+    methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+    allowedHeaders: ['Content-Type','Authorization'],
 }))
 
 //Security middleware
